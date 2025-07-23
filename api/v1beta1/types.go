@@ -290,6 +290,23 @@ type AllocationPool struct {
 	End string `json:"end"`
 }
 
+// SubportOpts defines a trunk subport
+type SubportOpts struct {
+	// Network is a query for an openstack network that the subport will be created on.
+	// This will fail if the query returns more than one network.
+	// +optional
+	Network *NetworkParam `json:"network,omitempty"`
+
+	// SegmentationID is the segmentation ID of the subport. E.g. VLAN ID.
+	// +required
+	SegmentationID int `json:"segmentationID"`
+
+	// SegmentationType is the segmentation type of the subport. E.g. "vlan".
+	// +required
+	// +kubebuilder:validation:Enum=vlan;flat
+	SegmentationType string `json:"segmentationType"`
+}
+
 type PortOpts struct {
 	// Network is a query for an openstack network that the port will be created or discovered on.
 	// This will fail if the query returns more than one network.
@@ -325,6 +342,12 @@ type PortOpts struct {
 	// bastion host.
 	// +optional
 	Trunk *bool `json:"trunk,omitempty"`
+
+	// Subports is a list of port specifications that will be created as
+	// subports of the trunk.
+	// +optional
+	// +listType=atomic
+	Subports []SubportOpts `json:"subports,omitempty"`
 
 	ResolvedPortSpecFields `json:",inline"`
 }
@@ -392,6 +415,22 @@ type ResolvedPortSpecFields struct {
 	ValueSpecs []ValueSpec `json:"valueSpecs,omitempty"`
 }
 
+// ResolvedSubportSpec is a SubportOpts with all contained references fully resolved.
+type ResolvedSubportSpec struct {
+	// NetworkID is the ID of the network the subport will be created on.
+	NetworkID string `json:"networkID"`
+
+	// SegmentationID is the segmentation ID of the subport. E.g. VLAN ID.
+	SegmentationID int `json:"segmentationID"`
+
+	// SegmentationType is the segmentation type of the subport. E.g. "vlan".
+	SegmentationType string `json:"segmentationType"`
+
+	// PortID is the ID of the subport, will be filled in after creation.
+	// +optional
+	PortID string `json:"portID,omitempty"`
+}
+
 // ResolvedPortSpec is a PortOpts with all contained references fully resolved.
 type ResolvedPortSpec struct {
 	// Name is the name of the port.
@@ -411,6 +450,12 @@ type ResolvedPortSpec struct {
 	// Trunk specifies whether trunking is enabled at the port level.
 	// +optional
 	Trunk optional.Bool `json:"trunk,omitempty"`
+
+	// Subports is a list of resolved port specifications that will be created as
+	// subports of the trunk.
+	// +optional
+	// +listType=atomic
+	Subports []ResolvedSubportSpec `json:"subports,omitempty"`
 
 	// FixedIPs is a list of pairs of subnet and/or IP address to assign to the port. If specified, these must be subnets of the port's network.
 	// +optional

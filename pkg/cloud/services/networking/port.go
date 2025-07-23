@@ -27,6 +27,7 @@ import (
 	"github.com/gophercloud/gophercloud/v2"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/portsbinding"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/portsecurity"
+	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/extensions/trunks"
 	"github.com/gophercloud/gophercloud/v2/openstack/networking/v2/ports"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
@@ -136,7 +137,34 @@ func (s *Service) ensurePortTagsAndTrunk(port *ports.Port, eventObject runtime.O
 		}
 	}
 	if ptr.Deref(portSpec.Trunk, false) {
-		trunk, err := s.getOrCreateTrunkForPort(eventObject, port)
+		// Create subports if they are defined
+		var trunkSubports []trunks.Subport
+		if len(portSpec.Subports) > 0 {
+			for _, subportSpec := range portSpec.Subports {
+				// Create the subport
+				subportName := fmt.Sprintf("%s-subport-%d", port.Name, subportSpec.SegmentationID)
+				subportCreateOpts := ports.CreateOpts{
+					Name:         subportName,
+					NetworkID:    subportSpec.NetworkID,
+					AdminStateUp: portSpec.AdminStateUp,
+				}
+				
+				subport, err := s.client.CreatePort(subportCreateOpts)
+				if err != nil {
+					record.Warnf(eventObject, "FailedCreateSubport", "Failed to create subport %s: %v", subportName, err)
+					return fmt.Errorf("failed to create subport %s: %w", subportName, err)
+				}
+				record.Eventf(eventObject, "SuccessfulCreateSubport", "Created subport %s with id %s", subport.Name, subport.ID)
+				
+				trunkSubports = append(trunkSubports, trunks.Subport{
+					PortID:           subport.ID,
+					SegmentationID:   subportSpec.SegmentationID,
+					SegmentationType: subportSpec.SegmentationType,
+				})
+			}
+		}
+
+		trunk, err := s.getOrCreateTrunkForPort(eventObject, port, trunkSubports)
 		if err != nil {
 			record.Warnf(eventObject, "FailedCreateTrunk", "Failed to create trunk for port %s: %v", port.Name, err)
 			return err
@@ -495,6 +523,28 @@ func (s *Service) normalizePorts(ports []infrav1.PortOpts, clusterResourceName, 
 				normalizedPort.SecurityGroups, err = s.GetSecurityGroups(port.SecurityGroups)
 				if err != nil {
 					return nil, fmt.Errorf("error getting security groups: %v", err)
+				}
+			}
+		}
+
+		// Resolve subports if trunk is enabled
+		if ptr.Deref(normalizedPort.Trunk, false) && len(port.Subports) > 0 {
+			normalizedPort.Subports = make([]infrav1.ResolvedSubportSpec, len(port.Subports))
+			for j, subport := range port.Subports {
+				// Resolve network ID for the subport
+				if subport.Network == nil {
+					return nil, fmt.Errorf("subport %d of port %s must specify a network", j, normalizedPort.Name)
+				}
+				
+				network, err := s.GetNetworkByParam(subport.Network)
+				if err != nil {
+					return nil, fmt.Errorf("failed to find network for subport %d of port %s: %w", j, normalizedPort.Name, err)
+				}
+				
+				normalizedPort.Subports[j] = infrav1.ResolvedSubportSpec{
+					NetworkID:        network.ID,
+					SegmentationID:   subport.SegmentationID,
+					SegmentationType: subport.SegmentationType,
 				}
 			}
 		}

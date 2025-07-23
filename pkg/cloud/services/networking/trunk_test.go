@@ -101,7 +101,7 @@ func Test_GetOrCreateTrunk(t *testing.T) {
 			s := Service{
 				client: mockClient,
 			}
-			got, err := s.getOrCreateTrunkForPort(eventObject, tt.port)
+			got, err := s.getOrCreateTrunkForPort(eventObject, tt.port, nil)
 			if tt.wantErr {
 				g.Expect(err).To(HaveOccurred())
 			} else {

@@ -1118,6 +1118,12 @@ var schemaYAML = typed.YAMLObject(`types:
           elementType:
             namedType: io.k8s.sigs.cluster-api-provider-openstack.api.v1beta1.SecurityGroupParam
           elementRelationship: atomic
+    - name: subports
+      type:
+        list:
+          elementType:
+            namedType: io.k8s.sigs.cluster-api-provider-openstack.api.v1beta1.SubportOpts
+          elementRelationship: atomic
     - name: tags
       type:
         list:
@@ -1223,6 +1229,12 @@ var schemaYAML = typed.YAMLObject(`types:
           elementType:
             scalar: string
           elementRelationship: atomic
+    - name: subports
+      type:
+        list:
+          elementType:
+            namedType: io.k8s.sigs.cluster-api-provider-openstack.api.v1beta1.ResolvedSubportSpec
+          elementRelationship: atomic
     - name: tags
       type:
         list:
@@ -1243,6 +1255,24 @@ var schemaYAML = typed.YAMLObject(`types:
     - name: vnicType
       type:
         scalar: string
+- name: io.k8s.sigs.cluster-api-provider-openstack.api.v1beta1.ResolvedSubportSpec
+  map:
+    fields:
+    - name: networkID
+      type:
+        scalar: string
+      default: ""
+    - name: portID
+      type:
+        scalar: string
+    - name: segmentationID
+      type:
+        scalar: numeric
+      default: 0
+    - name: segmentationType
+      type:
+        scalar: string
+      default: ""
 - name: io.k8s.sigs.cluster-api-provider-openstack.api.v1beta1.ResourceReference
   map:
     fields:
@@ -1578,6 +1608,20 @@ var schemaYAML = typed.YAMLObject(`types:
           elementType:
             scalar: string
           elementRelationship: atomic
+- name: io.k8s.sigs.cluster-api-provider-openstack.api.v1beta1.SubportOpts
+  map:
+    fields:
+    - name: network
+      type:
+        namedType: io.k8s.sigs.cluster-api-provider-openstack.api.v1beta1.NetworkParam
+    - name: segmentationID
+      type:
+        scalar: numeric
+      default: 0
+    - name: segmentationType
+      type:
+        scalar: string
+      default: ""
 - name: io.k8s.sigs.cluster-api-provider-openstack.api.v1beta1.ValueSpec
   map:
     fields:

@@ -50,7 +50,7 @@ func (s *Service) GetTrunkSupport() (bool, error) {
 	return false, nil
 }
 
-func (s *Service) getOrCreateTrunkForPort(eventObject runtime.Object, port *ports.Port) (*trunks.Trunk, error) {
+func (s *Service) getOrCreateTrunkForPort(eventObject runtime.Object, port *ports.Port, subports []trunks.Subport) (*trunks.Trunk, error) {
 	trunkList, err := s.client.ListTrunk(trunks.ListOpts{
 		Name:   port.Name,
 		PortID: port.ID,
@@ -60,13 +60,51 @@ func (s *Service) getOrCreateTrunkForPort(eventObject runtime.Object, port *port
 	}
 
 	if len(trunkList) != 0 {
-		return &trunkList[0], nil
+		existingTrunk := &trunkList[0]
+		
+		// If there are new subports to add, we need to add them to the existing trunk
+		if len(subports) > 0 {
+			// Get existing subports
+			existingSubports, err := s.client.ListTrunkSubports(existingTrunk.ID)
+			if err != nil {
+				return nil, fmt.Errorf("failed to list existing subports: %w", err)
+			}
+			
+			// Find new subports that aren't already attached
+			var newSubports []trunks.Subport
+			for _, subport := range subports {
+				found := false
+				for _, existing := range existingSubports {
+					if existing.PortID == subport.PortID {
+						found = true
+						break
+					}
+				}
+				if !found {
+					newSubports = append(newSubports, subport)
+				}
+			}
+			
+			// Add new subports if any
+			if len(newSubports) > 0 {
+				addSubportsOpts := trunks.AddSubportsOpts{
+					Subports: newSubports,
+				}
+				_, err := s.client.AddSubports(existingTrunk.ID, addSubportsOpts)
+				if err != nil {
+					return nil, fmt.Errorf("failed to add subports to trunk: %w", err)
+				}
+			}
+		}
+		
+		return existingTrunk, nil
 	}
 
 	trunkCreateOpts := trunks.CreateOpts{
 		Name:        port.Name,
 		PortID:      port.ID,
 		Description: port.Description,
+		Subports:    subports,
 	}
 
 	trunk, err := s.client.CreateTrunk(trunkCreateOpts)

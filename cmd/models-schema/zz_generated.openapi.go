@@ -367,6 +367,7 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.ResolvedMachineSpec":              schema_sigsk8sio_cluster_api_provider_openstack_api_v1beta1_ResolvedMachineSpec(ref),
 		"sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.ResolvedPortSpec":                 schema_sigsk8sio_cluster_api_provider_openstack_api_v1beta1_ResolvedPortSpec(ref),
 		"sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.ResolvedPortSpecFields":           schema_sigsk8sio_cluster_api_provider_openstack_api_v1beta1_ResolvedPortSpecFields(ref),
+		"sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.ResolvedSubportSpec":              schema_sigsk8sio_cluster_api_provider_openstack_api_v1beta1_ResolvedSubportSpec(ref),
 		"sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.ResourceReference":                schema_sigsk8sio_cluster_api_provider_openstack_api_v1beta1_ResourceReference(ref),
 		"sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.RootVolume":                       schema_sigsk8sio_cluster_api_provider_openstack_api_v1beta1_RootVolume(ref),
 		"sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.Router":                           schema_sigsk8sio_cluster_api_provider_openstack_api_v1beta1_Router(ref),
@@ -385,6 +386,7 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.SubnetFilter":                     schema_sigsk8sio_cluster_api_provider_openstack_api_v1beta1_SubnetFilter(ref),
 		"sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.SubnetParam":                      schema_sigsk8sio_cluster_api_provider_openstack_api_v1beta1_SubnetParam(ref),
 		"sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.SubnetSpec":                       schema_sigsk8sio_cluster_api_provider_openstack_api_v1beta1_SubnetSpec(ref),
+		"sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.SubportOpts":                      schema_sigsk8sio_cluster_api_provider_openstack_api_v1beta1_SubportOpts(ref),
 		"sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.ValueSpec":                        schema_sigsk8sio_cluster_api_provider_openstack_api_v1beta1_ValueSpec(ref),
 		"sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.VolumeAvailabilityZone":           schema_sigsk8sio_cluster_api_provider_openstack_api_v1beta1_VolumeAvailabilityZone(ref),
 		"sigs.k8s.io/cluster-api/api/v1beta1.APIEndpoint":                                         schema_sigsk8sio_cluster_api_api_v1beta1_APIEndpoint(ref),
@@ -19469,6 +19471,25 @@ func schema_sigsk8sio_cluster_api_provider_openstack_api_v1beta1_PortOpts(ref co
 							Format:      "",
 						},
 					},
+					"subports": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "atomic",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "Subports is a list of port specifications that will be created as subports of the trunk.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.SubportOpts"),
+									},
+								},
+							},
+						},
+					},
 					"adminStateUp": {
 						SchemaProps: spec.SchemaProps{
 							Description: "AdminStateUp specifies whether the port should be created in the up (true) or down (false) state. The default is up.",
@@ -19557,7 +19578,7 @@ func schema_sigsk8sio_cluster_api_provider_openstack_api_v1beta1_PortOpts(ref co
 			},
 		},
 		Dependencies: []string{
-			"sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.AddressPair", "sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.BindingProfile", "sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.FixedIP", "sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.NetworkParam", "sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.SecurityGroupParam", "sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.ValueSpec"},
+			"sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.AddressPair", "sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.BindingProfile", "sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.FixedIP", "sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.NetworkParam", "sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.SecurityGroupParam", "sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.SubportOpts", "sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.ValueSpec"},
 	}
 }
 
@@ -19717,6 +19738,25 @@ func schema_sigsk8sio_cluster_api_provider_openstack_api_v1beta1_ResolvedPortSpe
 							Format:      "",
 						},
 					},
+					"subports": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "atomic",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "Subports is a list of resolved port specifications that will be created as subports of the trunk.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.ResolvedSubportSpec"),
+									},
+								},
+							},
+						},
+					},
 					"fixedIPs": {
 						VendorExtensible: spec.VendorExtensible{
 							Extensions: spec.Extensions{
@@ -19845,7 +19885,7 @@ func schema_sigsk8sio_cluster_api_provider_openstack_api_v1beta1_ResolvedPortSpe
 			},
 		},
 		Dependencies: []string{
-			"sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.AddressPair", "sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.BindingProfile", "sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.ResolvedFixedIP", "sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.ValueSpec"},
+			"sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.AddressPair", "sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.BindingProfile", "sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.ResolvedFixedIP", "sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.ResolvedSubportSpec", "sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.ValueSpec"},
 	}
 }
 
@@ -19945,6 +19985,51 @@ func schema_sigsk8sio_cluster_api_provider_openstack_api_v1beta1_ResolvedPortSpe
 		},
 		Dependencies: []string{
 			"sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.AddressPair", "sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.BindingProfile", "sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.ValueSpec"},
+	}
+}
+
+func schema_sigsk8sio_cluster_api_provider_openstack_api_v1beta1_ResolvedSubportSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "ResolvedSubportSpec is a SubportOpts with all contained references fully resolved.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"networkID": {
+						SchemaProps: spec.SchemaProps{
+							Description: "NetworkID is the ID of the network the subport will be created on.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"segmentationID": {
+						SchemaProps: spec.SchemaProps{
+							Description: "SegmentationID is the segmentation ID of the subport. E.g. VLAN ID.",
+							Default:     0,
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"segmentationType": {
+						SchemaProps: spec.SchemaProps{
+							Description: "SegmentationType is the segmentation type of the subport. E.g. \"vlan\".",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"portID": {
+						SchemaProps: spec.SchemaProps{
+							Description: "PortID is the ID of the subport, will be filled in after creation.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"networkID", "segmentationID", "segmentationType"},
+			},
+		},
 	}
 }
 
@@ -20881,6 +20966,44 @@ func schema_sigsk8sio_cluster_api_provider_openstack_api_v1beta1_SubnetSpec(ref 
 		},
 		Dependencies: []string{
 			"sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.AllocationPool"},
+	}
+}
+
+func schema_sigsk8sio_cluster_api_provider_openstack_api_v1beta1_SubportOpts(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "SubportOpts defines a trunk subport",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"network": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Network is a query for an openstack network that the subport will be created on. This will fail if the query returns more than one network.",
+							Ref:         ref("sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.NetworkParam"),
+						},
+					},
+					"segmentationID": {
+						SchemaProps: spec.SchemaProps{
+							Description: "SegmentationID is the segmentation ID of the subport. E.g. VLAN ID.",
+							Default:     0,
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"segmentationType": {
+						SchemaProps: spec.SchemaProps{
+							Description: "SegmentationType is the segmentation type of the subport. E.g. \"vlan\".",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"segmentationID", "segmentationType"},
+			},
+		},
+		Dependencies: []string{
+			"sigs.k8s.io/cluster-api-provider-openstack/api/v1beta1.NetworkParam"},
 	}
 }
 

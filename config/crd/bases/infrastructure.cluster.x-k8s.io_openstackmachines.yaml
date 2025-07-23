@@ -610,6 +610,109 @@ spec:
                         type: object
                       type: array
                       x-kubernetes-list-type: atomic
+                    subports:
+                      description: |-
+                        Subports is a list of port specifications that will be created as
+                        subports of the trunk.
+                      items:
+                        description: SubportOpts defines a trunk subport
+                        properties:
+                          network:
+                            description: |-
+                              Network is a query for an openstack network that the subport will be created on.
+                              This will fail if the query returns more than one network.
+                            maxProperties: 1
+                            minProperties: 1
+                            properties:
+                              filter:
+                                description: Filter specifies a filter to select an
+                                  OpenStack network. If provided, cannot be empty.
+                                minProperties: 1
+                                properties:
+                                  description:
+                                    type: string
+                                  name:
+                                    type: string
+                                  notTags:
+                                    description: |-
+                                      NotTags is a list of tags to filter by. If specified, resources which
+                                      contain all of the given tags will be excluded from the result.
+                                    items:
+                                      description: |-
+                                        NeutronTag represents a tag on a Neutron resource.
+                                        It may not be empty and may not contain commas.
+                                      minLength: 1
+                                      pattern: ^[^,]+$
+                                      type: string
+                                    type: array
+                                    x-kubernetes-list-type: set
+                                  notTagsAny:
+                                    description: |-
+                                      NotTagsAny is a list of tags to filter by. If specified, resources
+                                      which contain any of the given tags will be excluded from the result.
+                                    items:
+                                      description: |-
+                                        NeutronTag represents a tag on a Neutron resource.
+                                        It may not be empty and may not contain commas.
+                                      minLength: 1
+                                      pattern: ^[^,]+$
+                                      type: string
+                                    type: array
+                                    x-kubernetes-list-type: set
+                                  projectID:
+                                    type: string
+                                  tags:
+                                    description: |-
+                                      Tags is a list of tags to filter by. If specified, the resource must
+                                      have all of the tags specified to be included in the result.
+                                    items:
+                                      description: |-
+                                        NeutronTag represents a tag on a Neutron resource.
+                                        It may not be empty and may not contain commas.
+                                      minLength: 1
+                                      pattern: ^[^,]+$
+                                      type: string
+                                    type: array
+                                    x-kubernetes-list-type: set
+                                  tagsAny:
+                                    description: |-
+                                      TagsAny is a list of tags to filter by. If specified, the resource
+                                      must have at least one of the tags specified to be included in the
+                                      result.
+                                    items:
+                                      description: |-
+                                        NeutronTag represents a tag on a Neutron resource.
+                                        It may not be empty and may not contain commas.
+                                      minLength: 1
+                                      pattern: ^[^,]+$
+                                      type: string
+                                    type: array
+                                    x-kubernetes-list-type: set
+                                type: object
+                              id:
+                                description: ID is the ID of the network to use. If
+                                  ID is provided, the other filters cannot be provided.
+                                  Must be in UUID format.
+                                format: uuid
+                                type: string
+                            type: object
+                          segmentationID:
+                            description: SegmentationID is the segmentation ID of
+                              the subport. E.g. VLAN ID.
+                            type: integer
+                          segmentationType:
+                            description: SegmentationType is the segmentation type
+                              of the subport. E.g. "vlan".
+                            enum:
+                            - vlan
+                            - flat
+                            type: string
+                        required:
+                        - segmentationID
+                        - segmentationType
+                        type: object
+                      type: array
+                      x-kubernetes-list-type: atomic
                     tags:
                       description: |-
                         Tags applied to the port (and corresponding trunk, if a trunk is configured.)
@@ -1166,6 +1269,37 @@ spec:
                             IDs to assign to the port.
                           items:
                             type: string
+                          type: array
+                          x-kubernetes-list-type: atomic
+                        subports:
+                          description: |-
+                            Subports is a list of resolved port specifications that will be created as
+                            subports of the trunk.
+                          items:
+                            description: ResolvedSubportSpec is a SubportOpts with
+                              all contained references fully resolved.
+                            properties:
+                              networkID:
+                                description: NetworkID is the ID of the network the
+                                  subport will be created on.
+                                type: string
+                              portID:
+                                description: PortID is the ID of the subport, will
+                                  be filled in after creation.
+                                type: string
+                              segmentationID:
+                                description: SegmentationID is the segmentation ID
+                                  of the subport. E.g. VLAN ID.
+                                type: integer
+                              segmentationType:
+                                description: SegmentationType is the segmentation
+                                  type of the subport. E.g. "vlan".
+                                type: string
+                            required:
+                            - networkID
+                            - segmentationID
+                            - segmentationType
+                            type: object
                           type: array
                           x-kubernetes-list-type: atomic
                         tags:

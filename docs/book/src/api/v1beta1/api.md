@@ -2060,7 +2060,8 @@ FilterByNeutronTags
 (<em>Appears on:</em>
 <a href="#infrastructure.cluster.x-k8s.io/v1beta1.APIServerLoadBalancer">APIServerLoadBalancer</a>, 
 <a href="#infrastructure.cluster.x-k8s.io/v1beta1.OpenStackClusterSpec">OpenStackClusterSpec</a>, 
-<a href="#infrastructure.cluster.x-k8s.io/v1beta1.PortOpts">PortOpts</a>)
+<a href="#infrastructure.cluster.x-k8s.io/v1beta1.PortOpts">PortOpts</a>, 
+<a href="#infrastructure.cluster.x-k8s.io/v1beta1.SubportOpts">SubportOpts</a>)
 </p>
 <p>
 <p>NetworkParam specifies an OpenStack network. It may be specified by either ID or Filter, but not both.</p>
@@ -4032,6 +4033,21 @@ bastion host.</p>
 </tr>
 <tr>
 <td>
+<code>subports</code><br/>
+<em>
+<a href="#infrastructure.cluster.x-k8s.io/v1beta1.SubportOpts">
+[]SubportOpts
+</a>
+</em>
+</td>
+<td>
+<em>(Optional)</em>
+<p>Subports is a list of port specifications that will be created as
+subports of the trunk.</p>
+</td>
+</tr>
+<tr>
+<td>
 <code>ResolvedPortSpecFields</code><br/>
 <em>
 <a href="#infrastructure.cluster.x-k8s.io/v1beta1.ResolvedPortSpecFields">
@@ -4268,6 +4284,21 @@ bool
 </tr>
 <tr>
 <td>
+<code>subports</code><br/>
+<em>
+<a href="#infrastructure.cluster.x-k8s.io/v1beta1.ResolvedSubportSpec">
+[]ResolvedSubportSpec
+</a>
+</em>
+</td>
+<td>
+<em>(Optional)</em>
+<p>Subports is a list of resolved port specifications that will be created as
+subports of the trunk.</p>
+</td>
+</tr>
+<tr>
+<td>
 <code>fixedIPs</code><br/>
 <em>
 <a href="#infrastructure.cluster.x-k8s.io/v1beta1.ResolvedFixedIP">
@@ -4461,6 +4492,70 @@ bool
 <p>Value specs are extra parameters to include in the API request with OpenStack.
 This is an extension point for the API, so what they do and if they are supported,
 depends on the specific OpenStack implementation.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3 id="infrastructure.cluster.x-k8s.io/v1beta1.ResolvedSubportSpec">ResolvedSubportSpec
+</h3>
+<p>
+(<em>Appears on:</em>
+<a href="#infrastructure.cluster.x-k8s.io/v1beta1.ResolvedPortSpec">ResolvedPortSpec</a>)
+</p>
+<p>
+<p>ResolvedSubportSpec is a SubportOpts with all contained references fully resolved.</p>
+</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>networkID</code><br/>
+<em>
+string
+</em>
+</td>
+<td>
+<p>NetworkID is the ID of the network the subport will be created on.</p>
+</td>
+</tr>
+<tr>
+<td>
+<code>segmentationID</code><br/>
+<em>
+int
+</em>
+</td>
+<td>
+<p>SegmentationID is the segmentation ID of the subport. E.g. VLAN ID.</p>
+</td>
+</tr>
+<tr>
+<td>
+<code>segmentationType</code><br/>
+<em>
+string
+</em>
+</td>
+<td>
+<p>SegmentationType is the segmentation type of the subport. E.g. &ldquo;vlan&rdquo;.</p>
+</td>
+</tr>
+<tr>
+<td>
+<code>portID</code><br/>
+<em>
+string
+</em>
+</td>
+<td>
+<em>(Optional)</em>
+<p>PortID is the ID of the subport, will be filled in after creation.</p>
 </td>
 </tr>
 </tbody>
@@ -5542,6 +5637,62 @@ the subnet. These addresses need to have the same IP version as CIDR.</p>
 <p>AllocationPools is an array of AllocationPool objects that will be applied to OpenStack Subnet being created.
 If set, OpenStack will only allocate these IPs for Machines. It will still be possible to create ports from
 outside of these ranges manually.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3 id="infrastructure.cluster.x-k8s.io/v1beta1.SubportOpts">SubportOpts
+</h3>
+<p>
+(<em>Appears on:</em>
+<a href="#infrastructure.cluster.x-k8s.io/v1beta1.PortOpts">PortOpts</a>)
+</p>
+<p>
+<p>SubportOpts defines a trunk subport</p>
+</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>network</code><br/>
+<em>
+<a href="#infrastructure.cluster.x-k8s.io/v1beta1.NetworkParam">
+NetworkParam
+</a>
+</em>
+</td>
+<td>
+<em>(Optional)</em>
+<p>Network is a query for an openstack network that the subport will be created on.
+This will fail if the query returns more than one network.</p>
+</td>
+</tr>
+<tr>
+<td>
+<code>segmentationID</code><br/>
+<em>
+int
+</em>
+</td>
+<td>
+<p>SegmentationID is the segmentation ID of the subport. E.g. VLAN ID.</p>
+</td>
+</tr>
+<tr>
+<td>
+<code>segmentationType</code><br/>
+<em>
+string
+</em>
+</td>
+<td>
+<p>SegmentationType is the segmentation type of the subport. E.g. &ldquo;vlan&rdquo;.</p>
 </td>
 </tr>
 </tbody>

@@ -21,13 +21,14 @@ package v1beta1
 // ResolvedPortSpecApplyConfiguration represents a declarative configuration of the ResolvedPortSpec type for use
 // with apply.
 type ResolvedPortSpecApplyConfiguration struct {
-	Name                                     *string                             `json:"name,omitempty"`
-	Description                              *string                             `json:"description,omitempty"`
-	NetworkID                                *string                             `json:"networkID,omitempty"`
-	Tags                                     []string                            `json:"tags,omitempty"`
-	Trunk                                    *bool                               `json:"trunk,omitempty"`
-	FixedIPs                                 []ResolvedFixedIPApplyConfiguration `json:"fixedIPs,omitempty"`
-	SecurityGroups                           []string                            `json:"securityGroups,omitempty"`
+	Name                                     *string                                 `json:"name,omitempty"`
+	Description                              *string                                 `json:"description,omitempty"`
+	NetworkID                                *string                                 `json:"networkID,omitempty"`
+	Tags                                     []string                                `json:"tags,omitempty"`
+	Trunk                                    *bool                                   `json:"trunk,omitempty"`
+	Subports                                 []ResolvedSubportSpecApplyConfiguration `json:"subports,omitempty"`
+	FixedIPs                                 []ResolvedFixedIPApplyConfiguration     `json:"fixedIPs,omitempty"`
+	SecurityGroups                           []string                                `json:"securityGroups,omitempty"`
 	ResolvedPortSpecFieldsApplyConfiguration `json:",inline"`
 }
 
@@ -76,6 +77,19 @@ func (b *ResolvedPortSpecApplyConfiguration) WithTags(values ...string) *Resolve
 // If called multiple times, the Trunk field is set to the value of the last call.
 func (b *ResolvedPortSpecApplyConfiguration) WithTrunk(value bool) *ResolvedPortSpecApplyConfiguration {
 	b.Trunk = &value
+	return b
+}
+
+// WithSubports adds the given value to the Subports field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the Subports field.
+func (b *ResolvedPortSpecApplyConfiguration) WithSubports(values ...*ResolvedSubportSpecApplyConfiguration) *ResolvedPortSpecApplyConfiguration {
+	for i := range values {
+		if values[i] == nil {
+			panic("nil value passed to WithSubports")
+		}
+		b.Subports = append(b.Subports, *values[i])
+	}
 	return b
 }
 

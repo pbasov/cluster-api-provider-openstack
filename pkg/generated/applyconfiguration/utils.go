@@ -126,6 +126,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &apiv1beta1.ResolvedPortSpecApplyConfiguration{}
 	case v1beta1.SchemeGroupVersion.WithKind("ResolvedPortSpecFields"):
 		return &apiv1beta1.ResolvedPortSpecFieldsApplyConfiguration{}
+	case v1beta1.SchemeGroupVersion.WithKind("ResolvedSubportSpec"):
+		return &apiv1beta1.ResolvedSubportSpecApplyConfiguration{}
 	case v1beta1.SchemeGroupVersion.WithKind("ResourceReference"):
 		return &apiv1beta1.ResourceReferenceApplyConfiguration{}
 	case v1beta1.SchemeGroupVersion.WithKind("RootVolume"):
@@ -162,6 +164,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &apiv1beta1.SubnetParamApplyConfiguration{}
 	case v1beta1.SchemeGroupVersion.WithKind("SubnetSpec"):
 		return &apiv1beta1.SubnetSpecApplyConfiguration{}
+	case v1beta1.SchemeGroupVersion.WithKind("SubportOpts"):
+		return &apiv1beta1.SubportOptsApplyConfiguration{}
 	case v1beta1.SchemeGroupVersion.WithKind("ValueSpec"):
 		return &apiv1beta1.ValueSpecApplyConfiguration{}
 	case v1beta1.SchemeGroupVersion.WithKind("VolumeAvailabilityZone"):
